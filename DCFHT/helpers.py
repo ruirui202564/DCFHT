@@ -3,45 +3,6 @@ import pandas as pd
 import math
 import os
 
-def chack_Nan(X_masked,n):
-    for i in range(n):
-        X_masked[i] = X_masked[i].strip()
-        X_masked[i] = X_masked[i].strip("[]")
-        X_masked[i] = X_masked[i].split(",")
-        X_masked[i] = list(map(float, X_masked[i]))
-        narry = np.array(X_masked[i])
-        where_are_nan = np.isnan(narry)
-        narry[where_are_nan] = 0
-        X_masked[i] = narry.tolist()
-    return X_masked
-
-def get_cont_indices(X):
-    max_ord=14
-    indices = np.zeros(X.shape[1]).astype(bool)
-    for i, col in enumerate(X.T):
-        col_nonan = col[~np.isnan(col)]
-        col_unique = np.unique(col_nonan)
-        if len(col_unique) > max_ord:
-            indices[i] = True
-    return indices
-
-def cont_to_binary(x):
-    # make the cutoff a random sample and ensure at least 10% are in each class
-    while True:
-        cutoff = np.random.choice(x)
-        if len(x[x < cutoff]) > 0.1*len(x) and len(x[x < cutoff]) < 0.9*len(x):
-            break
-    return (x > cutoff).astype(int)
-
-def cont_to_ord(x, k):
-    # make the cutoffs based on the quantiles
-    std_dev = np.std(x)
-    cuttoffs = np.linspace(np.min(x), np.max(x), k+1)[1:]
-    ords = np.zeros(len(x))
-    for cuttoff in cuttoffs:
-        ords += (x > cuttoff).astype(int)
-    return ords.astype(int)
-
 def mask_types_old(X, mask_num, seed):
     X_masked = np.copy(X)
     mask_indices = []
